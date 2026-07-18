@@ -57,7 +57,7 @@
     <div class="border-b border-line pb-10 mb-14">
       <span class="font-display text-[11px] tracking-[0.3em] uppercase text-ash">Home Delivery Subscriptions</span>
       <h1 class="mt-5 font-display font-900 tracking-mega leading-[0.95]" style="font-size:clamp(2.4rem,7vw,5rem)">WATER, ON<br>YOUR SCHEDULE.</h1>
-      <p class="mt-6 max-w-lg text-[15px] leading-relaxed text-ash">Pick a package, pick your day, and we'll keep your household stocked — delivered to your door every two weeks or monthly, collected by debit order. Free delivery in all serviced areas.</p>
+      <p class="mt-6 max-w-lg text-[15px] leading-relaxed text-ash">Pick a package, pick your day, and we'll keep your household stocked — delivered to your door weekly, every two weeks or monthly, collected by debit order. Delivery from R89 per drop, depending on your frequency.</p>
     </div>
 
     <form id="subForm" novalidate>
@@ -65,7 +65,7 @@
       <!-- STEP 1: PACKAGE -->
       <section class="mb-16">
         <h2 class="font-display font-800 text-xl tracking-tight mb-1">1 · Choose your package</h2>
-        <p class="text-[13px] text-ash mb-7">Prices are per delivery. Same price on both frequencies.</p>
+        <p class="text-[13px] text-ash mb-7">Package prices are per delivery. Your delivery charge depends on the frequency you pick in step 2.</p>
         <div id="pkgGrid" class="grid md:grid-cols-3 gap-3 md:gap-4"></div>
       </section>
 
@@ -75,7 +75,7 @@
         <div class="grid sm:grid-cols-2 gap-8 max-w-2xl">
           <div>
             <div class="font-display text-[10px] tracking-[0.25em] uppercase text-ash mb-3">Frequency</div>
-            <div id="freqGrid" class="grid grid-cols-2 gap-2"></div>
+            <div id="freqGrid" class="grid grid-cols-3 gap-2"></div>
           </div>
           <div>
             <div class="font-display text-[10px] tracking-[0.25em] uppercase text-ash mb-3">Delivery day</div>
@@ -186,12 +186,11 @@
   const cfg = await fetch('/api/config').then((r) => r.json());
   const R = (n) => 'R' + n.toLocaleString('en-ZA');
 
-  const pkgImages = { essential: 'assets/product-5l.jpg', active: 'assets/product-still.jpg', peak: 'assets/case-open.jpg' };
   document.getElementById('pkgGrid').innerHTML = Object.values(cfg.packages).map((p, i) => `
     <label class="pkg relative">
       <input type="radio" name="pkg" value="${p.id}" ${i === 0 ? 'checked' : ''} />
       <div class="card bg-white flex flex-col">
-        <div class="overflow-hidden bg-mist"><img src="${pkgImages[p.id] || 'assets/product-5l.jpg'}" alt="${p.name} package" class="w-full aspect-[4/3] object-cover" loading="lazy" /></div>
+        <div class="overflow-hidden bg-mist"><img src="${p.image}" alt="${p.name} package" class="w-full aspect-[4/3] object-cover" loading="lazy" /></div>
         <div class="p-6 flex flex-col flex-1">
           <div class="flex items-baseline justify-between">
             <h3 class="font-display font-800 text-lg tracking-tight">${p.name}</h3>
@@ -201,13 +200,13 @@
           <ul class="mt-4 text-[12px] text-ash space-y-1">
             ${p.items.map((it) => `<li>· ${it.qty} × ${cfg.products[it.productId].name}</li>`).join('')}
           </ul>
-          <div class="mt-4 font-display font-800 text-xl">${R(p.pricePerDelivery)}<span class="text-[11px] font-600 text-ash tracking-normal"> / delivery</span></div>
+          <div class="mt-4 font-display font-800 text-xl">${R(p.pricePerDelivery)}<span class="text-[11px] font-600 text-ash tracking-normal"> / delivery + delivery charge</span></div>
         </div>
       </div>
     </label>`).join('');
 
   document.getElementById('freqGrid').innerHTML = Object.values(cfg.frequencies).map((f, i) => `
-    <label class="choice relative"><input type="radio" name="freq" value="${f.id}" ${i === 0 ? 'checked' : ''} /><span>${f.name}</span></label>`).join('');
+    <label class="choice relative"><input type="radio" name="freq" value="${f.id}" ${i === 0 ? 'checked' : ''} /><span>${f.name}<br><em class="not-italic normal-case tracking-normal font-body font-400 text-[11px]">${R(f.deliveryFee)} delivery</em></span></label>`).join('');
 
   document.getElementById('dayGrid').innerHTML = Object.values(cfg.deliveryDays).map((d, i) => `
     <label class="choice relative"><input type="radio" name="day" value="${d.id}" ${i === 0 ? 'checked' : ''} /><span>${d.name}</span></label>`).join('');
@@ -223,8 +222,10 @@
     const p = cfg.packages[val('pkg')];
     const f = cfg.frequencies[val('freq')];
     const d = cfg.deliveryDays[val('day')];
-    document.getElementById('summary').textContent =
-      `${p.name} · ${R(p.pricePerDelivery)} ${f.id === 'biweekly' ? 'every 2 weeks' : 'per month'} · ${d.name}s`;
+    const total = p.pricePerDelivery + f.deliveryFee;
+    document.getElementById('summary').innerHTML =
+      `${p.name} · ${R(total)} per delivery · ${f.name.toLowerCase()}, ${d.name}s` +
+      `<div class="mt-1 font-body font-400 text-[12px] text-ash tracking-normal">${R(p.pricePerDelivery)} package + ${R(f.deliveryFee)} delivery charge</div>`;
   }
   form.addEventListener('change', updateSummary);
   updateSummary();
@@ -274,7 +275,7 @@
     const fmt = (ds) => new Date(ds + 'T12:00:00').toLocaleDateString('en-ZA', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     document.getElementById('confirmDetails').innerHTML = `
       <div><span class="text-ink font-600">Reference:</span> ${s.id}</div>
-      <div><span class="text-ink font-600">Package:</span> ${s.packageName} — ${R(s.pricePerDelivery)} per delivery</div>
+      <div><span class="text-ink font-600">Package:</span> ${s.packageName} — ${R(s.totalPerDelivery)} per delivery (${R(s.pricePerDelivery)} + ${R(s.deliveryFee)} delivery)</div>
       <div><span class="text-ink font-600">Schedule:</span> ${s.frequencyName}, ${s.deliveryDayName}s</div>
       <div><span class="text-ink font-600">Area:</span> ${s.areaName}</div>
       <div><span class="text-ink font-600">First delivery:</span> ${fmt(data.firstDelivery)}</div>

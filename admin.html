@@ -192,7 +192,7 @@ async function loadSubs() {
       <td class="whitespace-nowrap font-display font-600 text-[12px]">${s.id}</td>
       <td><div class="font-600">${s.name}</div><div class="text-ash text-[12px]">${s.phone}<br>${s.street}</div></td>
       <td>${s.areaName}</td>
-      <td><div class="font-600">${s.packageName} · ${R(s.pricePerDelivery)}</div><div class="text-ash text-[12px]">${s.frequencyName}, ${s.deliveryDayName}s</div></td>
+      <td><div class="font-600">${s.packageName} · ${R(s.totalPerDelivery)}</div><div class="text-ash text-[12px]">${R(s.pricePerDelivery)} + ${R(s.deliveryFee)} delivery · ${s.frequencyName}, ${s.deliveryDayName}s</div></td>
       <td>${fmtDate(s.nextDeliveryDate)}</td>
       <td>${badge(s.status)}</td>
       <td class="whitespace-nowrap no-print">

@@ -23,14 +23,17 @@ node test/smoke.js      # end-to-end test of the whole subscription flow
 
 | Package | Contents | Price |
 |---|---|---|
-| Essential | 4 × 5L still | R260 |
-| Active | 2 × case of 24 × 500ml | R480 |
-| Peak | 4 × 5L + 2 × case | R680 |
+| Essential | 4 × 5L still | R119 |
+| Active | 2 × 5L + case of 24 × 500ml | R349 |
+| Peak | 4 × 5L + case of 24 × 500ml | R409 |
 
-**Schedule** — customers pick a frequency (every 2 weeks or monthly) and a fixed
-delivery day (Monday or Friday). The first delivery is the next occurrence of
-their day at least 3 days out; each following delivery is exactly 14 or 28 days
-later, so it always stays on the same weekday.
+**Delivery charge** (added to each debit, by frequency): weekly R199 · every
+2 weeks R119 · monthly R89.
+
+**Schedule** — customers pick a frequency (weekly, every 2 weeks or monthly)
+and a fixed delivery day (Monday or Friday). The first delivery is the next
+occurrence of their day at least 3 days out; each following delivery is exactly
+7, 14 or 28 days later, so it always stays on the same weekday.
 
 **Areas / geotagging** — deliveries are limited to serviced areas (Centurion,
 Irene, Midrand, Pretoria East — edit in `lib/domain.js`). Every subscription is

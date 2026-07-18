@@ -50,6 +50,8 @@ async function main() {
     assert(Object.keys(cfg.packages).length === 3, 'config exposes exactly 3 packages');
     assert(cfg.areas.centurion && cfg.areas.centurion.lat < 0, 'Centurion area is geotagged');
     assert(cfg.deliveryDays.monday && cfg.deliveryDays.friday && Object.keys(cfg.deliveryDays).length === 2, 'delivery days are Monday and Friday only');
+    assert(cfg.frequencies.weekly.intervalDays === 7 && cfg.frequencies.weekly.deliveryFee === 199, 'weekly frequency: 7 days, R199 delivery');
+    assert(cfg.frequencies.biweekly.deliveryFee === 119 && cfg.frequencies.monthly.deliveryFee === 89, 'biweekly R119 / monthly R89 delivery charges');
 
     // validation
     const bad = await post('/api/subscriptions', signup({ mandateAccepted: false, areaId: 'sandton' }));
@@ -61,14 +63,14 @@ async function main() {
     const sub = s1.data.subscription;
     assert(sub.geotag.areaId === 'centurion', 'subscription geotagged to Centurion centroid');
     assert(new Date(s1.data.firstDelivery + 'T12:00:00Z').getUTCDay() === 5, 'first delivery lands on a Friday');
-    assert(s1.data.firstDebit.amount === 680, 'first debit equals Peak package price (R680)');
+    assert(s1.data.firstDebit.amount === 409 + 119, 'first debit is Peak R409 + biweekly delivery R119 = R528');
     assert(sub.mandate.accountNumberMasked.startsWith('****'), 'account number stored masked');
 
     // billing run collects the first debit (time-travel to its due date via ?today=)
     const due1 = (await get('/api/billing/debit-orders?status=pending')).debitOrders
       .find((d) => d.subscriptionId === sub.id).dueDate;
     const run1 = (await post('/api/billing/run?today=' + due1)).data;
-    assert(run1.collected === 1 && run1.totalCollected === 680, 'billing run collects the first debit order');
+    assert(run1.collected === 1 && run1.totalCollected === 528, 'billing run collects the first debit order');
     let dels = (await get('/api/deliveries?areaId=centurion')).deliveries;
     assert(dels.length === 1 && dels[0].status === 'scheduled', 'paid delivery appears on Centurion run sheet as scheduled');
     assert(dels[0].contents.length === 2, 'run sheet lists package contents (5L + cases)');
@@ -113,7 +115,22 @@ async function main() {
 
     // stats
     const stats = await get('/api/stats');
-    assert(stats.activeSubscriptions === 1 && stats.totalCollected === 680 + 260, 'stats reflect active count and total collected');
+    assert(stats.activeSubscriptions === 1 && stats.totalCollected === 528 + 208, 'stats reflect active count and total collected');
+
+    // weekly subscription cycles every 7 days
+    const s3 = await post('/api/subscriptions', signup({
+      email: 'weekly@example.com', name: 'Week Lee', frequency: 'weekly', deliveryDay: 'monday',
+      areaId: 'irene', packageId: 'active', bank: { accountNumber: '9988776655', bankName: 'FNB', accountHolder: 'W Lee', branchCode: '250655' },
+    }));
+    assert(s3.data.firstDebit.amount === 349 + 199, 'weekly Active debit is R349 + R199 = R548');
+    const due3 = (await get('/api/billing/debit-orders?status=pending')).debitOrders
+      .find((d) => d.subscriptionId === s3.data.subscription.id).dueDate;
+    await post('/api/billing/run?today=' + due3);
+    const dl3 = (await get('/api/deliveries?areaId=irene&status=scheduled')).deliveries[0];
+    const done3 = (await post(`/api/deliveries/${dl3.id}/deliver`)).data;
+    const expected3 = new Date(dl3.date + 'T12:00:00Z');
+    expected3.setUTCDate(expected3.getUTCDate() + 7);
+    assert(done3.nextDeliveryDate === expected3.toISOString().slice(0, 10), 'weekly next delivery is exactly 7 days later');
 
     // static pages + datastore protection
     for (const p of ['/', '/subscribe.html', '/admin.html']) {
