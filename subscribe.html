@@ -201,7 +201,7 @@
           <ul class="mt-4 text-[12px] text-ash space-y-1">
             ${p.items.map((it) => `<li>· ${it.qty} × ${cfg.products[it.productId].name}</li>`).join('')}
           </ul>
-          <div class="mt-4 font-display font-800 text-xl">${R(p.pricePerDelivery)}<span class="text-[11px] font-600 text-ash tracking-normal"> / delivery + delivery charge</span></div>
+          <div class="mt-4 font-display font-800 text-xl">${R(p.pricePerDelivery)}<span class="text-[11px] font-600 text-ash tracking-normal"> per delivery, excl. delivery charge</span></div>
         </div>
       </div>
     </label>`).join('');
