@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Peak Hydration | Delivery Ops</title>
+<meta name="robots" content="noindex" />
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ['Montserrat', 'Helvetica Neue', 'Arial', 'sans-serif'],
+          body: ['"Open Sans"', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        },
+        colors: { ink:'#0A0A0A', paper:'#FFFFFF', stone:'#B8B1A6', mist:'#F3F1ED', ash:'#6F6A63', line:'#E4E1DB' },
+      },
+    },
+  };
+</script>
+<style>
+  body { background:#fff; color:#0A0A0A; font-family:'Open Sans',sans-serif; }
+  .hidden { display:none; } /* fallback if the Tailwind CDN hasn't loaded */
+  .tab { border-bottom:2px solid transparent; }
+  .tab.active { border-color:#0A0A0A; color:#0A0A0A; }
+  table { width:100%; border-collapse:collapse; }
+  th { text-align:left; font-family:'Montserrat',sans-serif; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:#6F6A63; font-weight:600; padding:10px 12px; border-bottom:1px solid #E4E1DB; white-space:nowrap; }
+  td { padding:12px; border-bottom:1px solid #E4E1DB; font-size:13px; vertical-align:top; }
+  .btn-s { font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; border:1px solid #0A0A0A; padding:6px 12px; cursor:pointer; transition:all .2s; background:#fff; }
+  .btn-s:hover { background:#0A0A0A; color:#fff; }
+  .badge { display:inline-flex; align-items:center; gap:6px; font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; }
+  .dot { width:7px; height:7px; border-radius:50%; display:inline-block; }
+  @media print {
+    .no-print { display:none !important; }
+    #panel-runsheet { display:block !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="border-b border-line no-print">
+  <div class="mx-auto max-w-[1400px] px-5 md:px-10 h-16 flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <img src="assets/logo-black.png" alt="Peak Hydration" class="h-[15px] w-auto" />
+      <span class="font-display text-[11px] tracking-[0.25em] uppercase text-ash">Delivery Ops</span>
+    </div>
+    <a href="index.html" class="font-display text-[11px] font-600 tracking-[0.18em] uppercase text-ash hover:text-ink transition-colors">View site &rarr;</a>
+  </div>
+  <div class="mx-auto max-w-[1400px] px-5 md:px-10 flex gap-8 font-display text-[12px] font-700 tracking-[0.18em] uppercase text-ash">
+    <button class="tab active py-4" data-tab="overview">Overview</button>
+    <button class="tab py-4" data-tab="subs">Subscriptions</button>
+    <button class="tab py-4" data-tab="runsheet">Run sheet</button>
+    <button class="tab py-4" data-tab="billing">Billing</button>
+  </div>
+</header>
+
+<main class="mx-auto max-w-[1400px] px-5 md:px-10 py-10">
+
+  <!-- OVERVIEW -->
+  <section id="panel-overview">
+    <div id="tiles" class="grid grid-cols-2 lg:grid-cols-5 gap-3"></div>
+    <div class="mt-10 max-w-xl">
+      <h2 class="font-display font-800 text-lg tracking-tight mb-5">Active subscriptions by area</h2>
+      <div id="areaBars" class="space-y-3"></div>
+    </div>
+  </section>
+
+  <!-- SUBSCRIPTIONS -->
+  <section id="panel-subs" class="hidden">
+    <div class="flex flex-wrap items-end gap-4 mb-6 no-print">
+      <div>
+        <label class="font-display text-[10px] tracking-[0.2em] uppercase text-ash block mb-1">Area</label>
+        <select id="subAreaFilter" class="border border-line px-3 py-2 text-sm bg-white"></select>
+      </div>
+      <div>
+        <label class="font-display text-[10px] tracking-[0.2em] uppercase text-ash block mb-1">Status</label>
+        <select id="subStatusFilter" class="border border-line px-3 py-2 text-sm bg-white">
+          <option value="">All</option>
+          <option value="active">Active</option>
+          <option value="paused">Paused</option>
+          <option value="suspended">Suspended (failed debit)</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+    </div>
+    <div class="overflow-x-auto"><table id="subsTable"></table></div>
+  </section>
+
+  <!-- RUN SHEET -->
+  <section id="panel-runsheet" class="hidden">
+    <div class="flex flex-wrap items-end gap-4 mb-6 no-print">
+      <div>
+        <label class="font-display text-[10px] tracking-[0.2em] uppercase text-ash block mb-1">Delivery date</label>
+        <input id="rsDate" type="date" class="border border-line px-3 py-2 text-sm bg-white" />
+      </div>
+      <div>
+        <label class="font-display text-[10px] tracking-[0.2em] uppercase text-ash block mb-1">Area</label>
+        <select id="rsArea" class="border border-line px-3 py-2 text-sm bg-white"></select>
+      </div>
+      <button id="rsNextMon" class="btn-s">Next Monday</button>
+      <button id="rsNextFri" class="btn-s">Next Friday</button>
+      <button id="rsAll" class="btn-s">All upcoming</button>
+      <button onclick="window.print()" class="btn-s">Print run sheet</button>
+    </div>
+    <h2 id="rsTitle" class="font-display font-800 text-lg tracking-tight mb-2"></h2>
+    <p id="rsLoad" class="text-[13px] text-ash mb-5"></p>
+    <div class="overflow-x-auto"><table id="rsTable"></table></div>
+  </section>
+
+  <!-- BILLING -->
+  <section id="panel-billing" class="hidden">
+    <div class="flex flex-wrap items-center gap-4 mb-8 no-print">
+      <button id="runBilling" class="bg-ink text-white font-display text-[11px] font-700 tracking-[0.2em] uppercase px-7 py-3.5 hover:bg-stone hover:text-ink transition-colors">Run debit orders</button>
+      <span id="billingResult" class="text-[13px] text-ash"></span>
+    </div>
+    <div class="grid lg:grid-cols-2 gap-10">
+      <div>
+        <h2 class="font-display font-800 text-lg tracking-tight mb-4">Debit orders</h2>
+        <div class="overflow-x-auto"><table id="doTable"></table></div>
+      </div>
+      <div>
+        <h2 class="font-display font-800 text-lg tracking-tight mb-4">Simulated bank accounts</h2>
+        <p class="text-[12px] text-ash mb-3">Demo bank — top up an account to retry a failed debit order.</p>
+        <div class="overflow-x-auto"><table id="accTable"></table></div>
+        <h2 class="font-display font-800 text-lg tracking-tight mt-10 mb-4">Transaction log</h2>
+        <div class="overflow-x-auto"><table id="txnTable"></table></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const R = (n) => 'R' + Number(n).toLocaleString('en-ZA');
+const get = (u) => fetch(u).then((r) => r.json());
+const post = (u, b) => fetch(u, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: b ? JSON.stringify(b) : null }).then((r) => r.json());
+const fmtDate = (ds) => ds ? new Date(ds + 'T12:00:00').toLocaleDateString('en-ZA', { weekday: 'short', day: 'numeric', month: 'short' }) : '—';
+
+// Status is always shown as dot + text, never color alone.
+const STATUS = {
+  active:    ['#2f7d4f', 'Active'],    paused:    ['#B8B1A6', 'Paused'],
+  suspended: ['#b3261e', 'Suspended'], cancelled: ['#6F6A63', 'Cancelled'],
+  pending_payment: ['#B8B1A6', 'Awaiting payment'], scheduled: ['#2f7d4f', 'Paid · scheduled'],
+  delivered: ['#0A0A0A', 'Delivered'], pending: ['#B8B1A6', 'Pending'],
+  paid: ['#2f7d4f', 'Paid'], failed: ['#b3261e', 'Failed'],
+  success: ['#2f7d4f', 'Success'],
+};
+const badge = (s) => {
+  const [c, label] = STATUS[s] || ['#6F6A63', s];
+  return `<span class="badge"><span class="dot" style="background:${c}"></span>${label}</span>`;
+};
+
+let cfg;
+
+async function loadOverview() {
+  const s = await get('/api/stats');
+  const tile = (label, value, sub) => `
+    <div class="border border-line p-5">
+      <div class="font-display text-[10px] tracking-[0.2em] uppercase text-ash">${label}</div>
+      <div class="mt-2 font-display font-800 text-3xl tracking-tight">${value}</div>
+      ${sub ? `<div class="mt-1 text-[11px] text-ash">${sub}</div>` : ''}
+    </div>`;
+  document.getElementById('tiles').innerHTML =
+    tile('Active subscriptions', s.activeSubscriptions, `${s.paused} paused · ${s.suspended} suspended`) +
+    tile('Est. monthly revenue', R(s.estimatedMonthlyRevenue), 'active subs only') +
+    tile('Collected to date', R(s.totalCollected), 'debit orders') +
+    tile('Pending debit orders', s.pendingDebitOrders, `${s.failedDebitOrders} failed`) +
+    tile('Deliveries next 7 days', s.deliveriesNext7Days, 'Mondays & Fridays');
+
+  const areas = Object.values(s.byArea);
+  const max = Math.max(1, ...areas.map((a) => a.active));
+  document.getElementById('areaBars').innerHTML = areas.map((a) => `
+    <div>
+      <div class="flex justify-between text-[12px] mb-1"><span>${a.name}</span><span class="text-ash">${a.active}</span></div>
+      <div class="bg-mist h-3"><div class="bg-ink h-3" style="width:${(a.active / max) * 100}%"></div></div>
+    </div>`).join('');
+}
+
+async function loadSubs() {
+  const area = document.getElementById('subAreaFilter').value;
+  const status = document.getElementById('subStatusFilter').value;
+  const q = new URLSearchParams();
+  if (area) q.set('areaId', area);
+  if (status) q.set('status', status);
+  const { subscriptions } = await get('/api/subscriptions?' + q);
+  const rows = subscriptions.map((s) => `
+    <tr>
+      <td class="whitespace-nowrap font-display font-600 text-[12px]">${s.id}</td>
+      <td><div class="font-600">${s.name}</div><div class="text-ash text-[12px]">${s.phone}<br>${s.street}</div></td>
+      <td>${s.areaName}</td>
+      <td><div class="font-600">${s.packageName} · ${R(s.pricePerDelivery)}</div><div class="text-ash text-[12px]">${s.frequencyName}, ${s.deliveryDayName}s</div></td>
+      <td>${fmtDate(s.nextDeliveryDate)}</td>
+      <td>${badge(s.status)}</td>
+      <td class="whitespace-nowrap no-print">
+        ${s.status === 'active' ? `<button class="btn-s" onclick="subAction('${s.id}','pause')">Pause</button>` : ''}
+        ${s.status === 'paused' || s.status === 'suspended' ? `<button class="btn-s" onclick="subAction('${s.id}','resume')">Resume</button>` : ''}
+        ${s.status !== 'cancelled' ? `<button class="btn-s" onclick="if(confirm('Cancel ${s.id}? Open deliveries and debit orders will be voided.'))subAction('${s.id}','cancel')">Cancel</button>` : ''}
+      </td>
+    </tr>`).join('');
+  document.getElementById('subsTable').innerHTML =
+    '<tr><th>Ref</th><th>Customer</th><th>Area</th><th>Package</th><th>Next delivery</th><th>Status</th><th></th></tr>' +
+    (rows || '<tr><td colspan="7" class="text-ash">No subscriptions match.</td></tr>');
+}
+async function subAction(id, action) { await post(`/api/subscriptions/${id}/${action}`); loadSubs(); }
+
+async function loadRunsheet() {
+  const date = document.getElementById('rsDate').value;
+  const area = document.getElementById('rsArea').value;
+  const q = new URLSearchParams();
+  if (date) q.set('date', date);
+  if (area) q.set('areaId', area);
+  const { deliveries } = await get('/api/deliveries?' + q);
+  const open = deliveries.filter((d) => d.status !== 'delivered' && d.status !== 'cancelled');
+  document.getElementById('rsTitle').textContent = date
+    ? `Run sheet — ${new Date(date + 'T12:00:00').toLocaleDateString('en-ZA', { weekday: 'long', day: 'numeric', month: 'long' })}${area ? ' · ' + cfg.areas[area].name : ''}`
+    : 'All deliveries' + (area ? ' · ' + cfg.areas[area].name : '');
+  const totals = {};
+  for (const d of open) for (const c of d.contents) totals[c.name] = (totals[c.name] || 0) + c.qty;
+  document.getElementById('rsLoad').textContent = open.length
+    ? 'Truck load: ' + Object.entries(totals).map(([n, q2]) => `${q2} × ${n}`).join(' · ')
+    : '';
+  const rows = deliveries.map((d) => `
+    <tr>
+      <td class="whitespace-nowrap">${fmtDate(d.date)}</td>
+      <td><div class="font-600">${d.customer}</div><div class="text-ash text-[12px]">${d.phone}</div></td>
+      <td><div>${d.street}</div><div class="text-ash text-[12px]">${d.areaName} · ${d.geotag.lat.toFixed(4)}, ${d.geotag.lng.toFixed(4)}</div></td>
+      <td>${d.contents.map((c) => `${c.qty} × ${c.name}`).join('<br>')}</td>
+      <td>${badge(d.status)}</td>
+      <td class="no-print">${d.status === 'scheduled' ? `<button class="btn-s" onclick="markDelivered('${d.id}')">Mark delivered</button>` : ''}</td>
+    </tr>`).join('');
+  document.getElementById('rsTable').innerHTML =
+    '<tr><th>Date</th><th>Customer</th><th>Address</th><th>Load</th><th>Status</th><th></th></tr>' +
+    (rows || '<tr><td colspan="6" class="text-ash">No deliveries for this selection.</td></tr>');
+}
+async function markDelivered(id) { await post(`/api/deliveries/${id}/deliver`); loadRunsheet(); }
+
+function nextWeekday(target) {
+  const d = new Date();
+  do { d.setDate(d.getDate() + 1); } while (d.getDay() !== target);
+  return d.toISOString().slice(0, 10);
+}
+
+async function loadBilling() {
+  const [{ debitOrders }, { transactions }, { accounts }] = await Promise.all([
+    get('/api/billing/debit-orders'), get('/api/billing/transactions'), get('/api/billing/accounts'),
+  ]);
+  const doRows = [...debitOrders].reverse().map((d) => `
+    <tr>
+      <td class="font-display font-600 text-[12px]">${d.id}</td>
+      <td><div class="font-600">${d.customer}</div><div class="text-ash text-[12px]">${d.areaName} · ${d.subscriptionId}</div></td>
+      <td>${R(d.amount)}</td>
+      <td>${fmtDate(d.dueDate)}</td>
+      <td>${badge(d.status)}</td>
+    </tr>`).join('');
+  document.getElementById('doTable').innerHTML =
+    '<tr><th>Ref</th><th>Customer</th><th>Amount</th><th>Due</th><th>Status</th></tr>' +
+    (doRows || '<tr><td colspan="5" class="text-ash">No debit orders yet.</td></tr>');
+
+  const accRows = accounts.map((a) => `
+    <tr>
+      <td><div class="font-600">${a.accountHolder}</div><div class="text-ash text-[12px]">${a.bankName} ${a.accountNumberMasked} · branch ${a.branchCode}</div></td>
+      <td>${R(a.balance)}</td>
+      <td class="no-print"><button class="btn-s" onclick="topup('${a.id}')">Top up</button></td>
+    </tr>`).join('');
+  document.getElementById('accTable').innerHTML =
+    '<tr><th>Account</th><th>Balance</th><th></th></tr>' +
+    (accRows || '<tr><td colspan="3" class="text-ash">No accounts yet.</td></tr>');
+
+  const txnRows = transactions.slice(0, 30).map((t) => `
+    <tr>
+      <td class="whitespace-nowrap">${fmtDate(t.date)}</td>
+      <td>${t.customer}</td>
+      <td>${R(t.amount)}</td>
+      <td>${badge(t.status)}<div class="text-ash text-[12px]">${t.reason}</div></td>
+    </tr>`).join('');
+  document.getElementById('txnTable').innerHTML =
+    '<tr><th>Date</th><th>Customer</th><th>Amount</th><th>Result</th></tr>' +
+    (txnRows || '<tr><td colspan="4" class="text-ash">No transactions yet.</td></tr>');
+}
+
+async function topup(id) {
+  const amount = Number(prompt('Top-up amount (R):', '1000'));
+  if (!amount) return;
+  await post(`/api/billing/accounts/${id}/topup`, { amount });
+  loadBilling();
+}
+
+document.getElementById('runBilling').addEventListener('click', async () => {
+  const r = await post('/api/billing/run');
+  document.getElementById('billingResult').textContent =
+    r.processed === 0
+      ? 'No debit orders due today.'
+      : `Processed ${r.processed} — collected ${r.collected} (${R(r.totalCollected)}), failed ${r.failed}.`;
+  loadBilling();
+});
+
+const loaders = { overview: loadOverview, subs: loadSubs, runsheet: loadRunsheet, billing: loadBilling };
+document.querySelectorAll('.tab').forEach((t) =>
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach((x) => x.classList.remove('active'));
+    t.classList.add('active');
+    document.querySelectorAll('main > section').forEach((s) => s.classList.add('hidden'));
+    document.getElementById('panel-' + t.dataset.tab).classList.remove('hidden');
+    loaders[t.dataset.tab]();
+  })
+);
+
+(async function init() {
+  cfg = await get('/api/config');
+  const areaOpts = '<option value="">All areas</option>' + Object.values(cfg.areas).map((a) => `<option value="${a.id}">${a.name}</option>`).join('');
+  document.getElementById('subAreaFilter').innerHTML = areaOpts;
+  document.getElementById('rsArea').innerHTML = areaOpts;
+  document.getElementById('subAreaFilter').addEventListener('change', loadSubs);
+  document.getElementById('subStatusFilter').addEventListener('change', loadSubs);
+  document.getElementById('rsDate').addEventListener('change', loadRunsheet);
+  document.getElementById('rsArea').addEventListener('change', loadRunsheet);
+  document.getElementById('rsNextMon').addEventListener('click', () => { document.getElementById('rsDate').value = nextWeekday(1); loadRunsheet(); });
+  document.getElementById('rsNextFri').addEventListener('click', () => { document.getElementById('rsDate').value = nextWeekday(5); loadRunsheet(); });
+  document.getElementById('rsAll').addEventListener('click', () => { document.getElementById('rsDate').value = ''; loadRunsheet(); });
+  loadOverview();
+})();
+</script>
+</body>
+</html>

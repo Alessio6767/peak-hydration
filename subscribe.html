@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Subscribe | Peak Hydration Home Delivery</title>
+<meta name="description" content="Peak Hydration home delivery subscriptions. Choose your package, your day, your area — we deliver every two weeks or monthly and collect by debit order." />
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ['Montserrat', 'Helvetica Neue', 'Arial', 'sans-serif'],
+          body: ['"Open Sans"', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        },
+        colors: { ink:'#0A0A0A', paper:'#FFFFFF', carbon:'#1F1F1F', stone:'#B8B1A6', mist:'#F3F1ED', ash:'#6F6A63', line:'#E4E1DB' },
+        letterSpacing: { mega: '-0.035em' },
+      },
+    },
+  };
+</script>
+<style>
+  body { background:#fff; color:#0A0A0A; font-family:'Open Sans',sans-serif; }
+  .hidden { display:none; } /* fallback if the Tailwind CDN hasn't loaded */
+  ::selection { background:#0A0A0A; color:#fff; }
+  .field { width:100%; background:transparent; border-bottom:1px solid #0A0A0A; padding:0.75rem 0; font-size:1rem; }
+  .field:focus { outline:none; border-color:#B8B1A6; }
+  .choice input { position:absolute; opacity:0; }
+  .choice span { display:block; border:1px solid #E4E1DB; padding:0.9rem 1rem; text-align:center; cursor:pointer; transition:all .3s;
+    font-family:'Montserrat',sans-serif; font-size:12px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; }
+  .choice input:checked + span { background:#0A0A0A; color:#fff; border-color:#0A0A0A; }
+  .pkg { cursor:pointer; }
+  .pkg input { position:absolute; opacity:0; }
+  .pkg .card { border:1px solid #E4E1DB; transition:all .3s; height:100%; }
+  .pkg input:checked + .card { border-color:#0A0A0A; box-shadow:0 0 0 1px #0A0A0A; }
+</style>
+</head>
+<body>
+
+<header class="fixed top-0 left-0 right-0 z-50 bg-paper/90 backdrop-blur-md border-b border-line">
+  <div class="mx-auto max-w-[1500px] px-5 md:px-10 h-16 md:h-20 flex items-center justify-between">
+    <a href="index.html" class="flex items-center select-none">
+      <img src="assets/logo-black.png" alt="Peak Hydration" class="h-[15px] md:h-[18px] w-auto" />
+    </a>
+    <a href="index.html" class="font-display text-[12px] font-600 tracking-[0.18em] uppercase hover:text-ash transition-colors">&larr; Back to site</a>
+  </div>
+</header>
+
+<main class="pt-28 md:pt-40 pb-24">
+  <div class="mx-auto max-w-[1100px] px-5 md:px-10">
+
+    <div class="border-b border-line pb-10 mb-14">
+      <span class="font-display text-[11px] tracking-[0.3em] uppercase text-ash">Home Delivery Subscriptions</span>
+      <h1 class="mt-5 font-display font-900 tracking-mega leading-[0.95]" style="font-size:clamp(2.4rem,7vw,5rem)">WATER, ON<br>YOUR SCHEDULE.</h1>
+      <p class="mt-6 max-w-lg text-[15px] leading-relaxed text-ash">Pick a package, pick your day, and we'll keep your household stocked — delivered to your door every two weeks or monthly, collected by debit order. Free delivery in all serviced areas.</p>
+    </div>
+
+    <form id="subForm" novalidate>
+
+      <!-- STEP 1: PACKAGE -->
+      <section class="mb-16">
+        <h2 class="font-display font-800 text-xl tracking-tight mb-1">1 · Choose your package</h2>
+        <p class="text-[13px] text-ash mb-7">Prices are per delivery. Same price on both frequencies.</p>
+        <div id="pkgGrid" class="grid md:grid-cols-3 gap-3 md:gap-4"></div>
+      </section>
+
+      <!-- STEP 2: SCHEDULE -->
+      <section class="mb-16">
+        <h2 class="font-display font-800 text-xl tracking-tight mb-7">2 · Choose your schedule</h2>
+        <div class="grid sm:grid-cols-2 gap-8 max-w-2xl">
+          <div>
+            <div class="font-display text-[10px] tracking-[0.25em] uppercase text-ash mb-3">Frequency</div>
+            <div id="freqGrid" class="grid grid-cols-2 gap-2"></div>
+          </div>
+          <div>
+            <div class="font-display text-[10px] tracking-[0.25em] uppercase text-ash mb-3">Delivery day</div>
+            <div id="dayGrid" class="grid grid-cols-2 gap-2"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 3: WHERE -->
+      <section class="mb-16">
+        <h2 class="font-display font-800 text-xl tracking-tight mb-1">3 · Where do we deliver?</h2>
+        <p class="text-[13px] text-ash mb-7">We currently service selected areas only. Your address is geotagged to its area for routing.</p>
+        <div class="grid sm:grid-cols-2 gap-8 max-w-2xl">
+          <div>
+            <label for="f-area" class="font-display text-[10px] tracking-[0.25em] uppercase text-ash">Delivery area</label>
+            <select id="f-area" class="field mt-2 cursor-pointer"></select>
+          </div>
+          <div>
+            <label for="f-street" class="font-display text-[10px] tracking-[0.25em] uppercase text-ash">Street address</label>
+            <input id="f-street" type="text" class="field mt-2" placeholder="12 Waterberg Street, Eldoraigne" />
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 4: CONTACT -->
+      <section class="mb-16">
+        <h2 class="font-display font-800 text-xl tracking-tight mb-7">4 · Your details</h2>
+        <div class="grid sm:grid-cols-3 gap-8 max-w-3xl">
+          <div>
+            <label for="f-name" class="font-display text-[10px] tracking-[0.25em] uppercase text-ash">Full name</label>
+            <input id="f-name" type="text" class="field mt-2" placeholder="Your name" />
+          </div>
+          <div>
+            <label for="f-email" class="font-display text-[10px] tracking-[0.25em] uppercase text-ash">Email</label>
+            <input id="f-email" type="email" class="field mt-2" placeholder="you@email.com" />
+          </div>
+          <div>
+            <label for="f-phone" class="font-display text-[10px] tracking-[0.25em] uppercase text-ash">Phone</label>
+            <input id="f-phone" type="tel" class="field mt-2" placeholder="066 000 0000" />
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 5: DEBIT ORDER -->
+      <section class="mb-16">
+        <h2 class="font-display font-800 text-xl tracking-tight mb-1">5 · Debit order details</h2>
+        <p class="text-[13px] text-ash mb-7">Each delivery is collected by debit order three days before your delivery day. <span class="text-ink font-600">Demo environment — a simulated bank account is used; no real money moves.</span></p>
+        <div class="grid sm:grid-cols-2 gap-8 max-w-2xl">
+          <div>
+            <label for="f-bank" class="font-display text-[10px] tracking-[0.25em] uppercase text-ash">Bank</label>
+            <input id="f-bank" type="text" class="field mt-2" placeholder="e.g. FNB, Capitec, Standard Bank" />
+          </div>
+          <div>
+            <label for="f-holder" class="font-display text-[10px] tracking-[0.25em] uppercase text-ash">Account holder</label>
+            <input id="f-holder" type="text" class="field mt-2" placeholder="Name on the account" />
+          </div>
+          <div>
+            <label for="f-accno" class="font-display text-[10px] tracking-[0.25em] uppercase text-ash">Account number</label>
+            <input id="f-accno" type="text" inputmode="numeric" class="field mt-2" placeholder="8–12 digits" />
+          </div>
+          <div>
+            <label for="f-branch" class="font-display text-[10px] tracking-[0.25em] uppercase text-ash">Branch code</label>
+            <input id="f-branch" type="text" inputmode="numeric" class="field mt-2" placeholder="6 digits" />
+          </div>
+        </div>
+        <label class="mt-8 flex items-start gap-3 max-w-2xl cursor-pointer select-none">
+          <input id="f-mandate" type="checkbox" class="mt-1 w-4 h-4 accent-black" />
+          <span class="text-[13px] leading-relaxed text-ash">I authorise Peak Hydration to collect the subscription amount from the account above by debit order, three days before each scheduled delivery, until this subscription is paused or cancelled.</span>
+        </label>
+      </section>
+
+      <!-- SUMMARY + SUBMIT -->
+      <section class="border border-line bg-mist p-7 md:p-10 max-w-3xl">
+        <div class="font-display text-[10px] tracking-[0.25em] uppercase text-ash">Your subscription</div>
+        <div id="summary" class="mt-3 font-display font-800 text-xl tracking-tight">—</div>
+        <div id="errors" class="hidden mt-5 text-[13px] leading-relaxed text-red-700"></div>
+        <button type="submit" id="submitBtn" class="mt-8 inline-flex items-center gap-3 bg-ink text-white px-9 py-4 font-display text-[12px] font-700 tracking-[0.2em] uppercase hover:bg-stone hover:text-ink transition-colors">
+          Start my subscription
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </section>
+    </form>
+
+    <!-- CONFIRMATION -->
+    <div id="confirm" class="hidden">
+      <div class="border border-ink p-8 md:p-14 text-center max-w-3xl mx-auto">
+        <span class="font-display text-[11px] tracking-[0.3em] uppercase text-ash">Subscription active</span>
+        <h2 class="mt-5 font-display font-900 tracking-mega leading-[0.95]" style="font-size:clamp(2rem,5vw,3.6rem)">YOU'RE ON<br>THE ROUTE.</h2>
+        <div id="confirmDetails" class="mt-8 text-left inline-block text-[14px] leading-loose text-ash"></div>
+        <div class="mt-10">
+          <a href="index.html" class="inline-flex items-center gap-3 border border-ink text-ink px-8 py-4 font-display text-[12px] font-700 tracking-[0.2em] uppercase hover:bg-ink hover:text-white transition-colors">Back to Peak Hydration</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer class="border-t border-line py-8">
+  <div class="mx-auto max-w-[1500px] px-5 md:px-10 flex flex-col md:flex-row justify-between gap-2 font-display text-[10px] tracking-[0.2em] uppercase text-ash">
+    <span>© Peak Hydration · Bottled in South Africa</span>
+    <span>Deliveries Mondays &amp; Fridays · Serviced areas only</span>
+  </div>
+</footer>
+
+<script>
+(async function () {
+  const cfg = await fetch('/api/config').then((r) => r.json());
+  const R = (n) => 'R' + n.toLocaleString('en-ZA');
+
+  const pkgImages = { essential: 'assets/product-5l.jpg', active: 'assets/product-still.jpg', peak: 'assets/case-open.jpg' };
+  document.getElementById('pkgGrid').innerHTML = Object.values(cfg.packages).map((p, i) => `
+    <label class="pkg relative">
+      <input type="radio" name="pkg" value="${p.id}" ${i === 0 ? 'checked' : ''} />
+      <div class="card bg-white flex flex-col">
+        <div class="overflow-hidden bg-mist"><img src="${pkgImages[p.id] || 'assets/product-5l.jpg'}" alt="${p.name} package" class="w-full aspect-[4/3] object-cover" loading="lazy" /></div>
+        <div class="p-6 flex flex-col flex-1">
+          <div class="flex items-baseline justify-between">
+            <h3 class="font-display font-800 text-lg tracking-tight">${p.name}</h3>
+            ${p.badge ? `<span class="font-display text-[9px] tracking-[0.2em] uppercase bg-ink text-white px-2 py-1">${p.badge}</span>` : ''}
+          </div>
+          <p class="mt-2 text-[13px] leading-relaxed text-ash flex-1">${p.tagline}</p>
+          <ul class="mt-4 text-[12px] text-ash space-y-1">
+            ${p.items.map((it) => `<li>· ${it.qty} × ${cfg.products[it.productId].name}</li>`).join('')}
+          </ul>
+          <div class="mt-4 font-display font-800 text-xl">${R(p.pricePerDelivery)}<span class="text-[11px] font-600 text-ash tracking-normal"> / delivery</span></div>
+        </div>
+      </div>
+    </label>`).join('');
+
+  document.getElementById('freqGrid').innerHTML = Object.values(cfg.frequencies).map((f, i) => `
+    <label class="choice relative"><input type="radio" name="freq" value="${f.id}" ${i === 0 ? 'checked' : ''} /><span>${f.name}</span></label>`).join('');
+
+  document.getElementById('dayGrid').innerHTML = Object.values(cfg.deliveryDays).map((d, i) => `
+    <label class="choice relative"><input type="radio" name="day" value="${d.id}" ${i === 0 ? 'checked' : ''} /><span>${d.name}</span></label>`).join('');
+
+  document.getElementById('f-area').innerHTML =
+    '<option value="">Select your area…</option>' +
+    Object.values(cfg.areas).map((a) => `<option value="${a.id}">${a.name}</option>`).join('');
+
+  const form = document.getElementById('subForm');
+  const val = (name) => form.querySelector(`input[name="${name}"]:checked`).value;
+
+  function updateSummary() {
+    const p = cfg.packages[val('pkg')];
+    const f = cfg.frequencies[val('freq')];
+    const d = cfg.deliveryDays[val('day')];
+    document.getElementById('summary').textContent =
+      `${p.name} · ${R(p.pricePerDelivery)} ${f.id === 'biweekly' ? 'every 2 weeks' : 'per month'} · ${d.name}s`;
+  }
+  form.addEventListener('change', updateSummary);
+  updateSummary();
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    const errBox = document.getElementById('errors');
+    btn.disabled = true;
+    btn.style.opacity = 0.5;
+    errBox.classList.add('hidden');
+
+    const payload = {
+      name: document.getElementById('f-name').value,
+      email: document.getElementById('f-email').value,
+      phone: document.getElementById('f-phone').value,
+      street: document.getElementById('f-street').value,
+      areaId: document.getElementById('f-area').value,
+      packageId: val('pkg'),
+      frequency: val('freq'),
+      deliveryDay: val('day'),
+      mandateAccepted: document.getElementById('f-mandate').checked,
+      bank: {
+        bankName: document.getElementById('f-bank').value,
+        accountHolder: document.getElementById('f-holder').value,
+        accountNumber: document.getElementById('f-accno').value,
+        branchCode: document.getElementById('f-branch').value,
+      },
+    };
+
+    const res = await fetch('/api/subscriptions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    btn.disabled = false;
+    btn.style.opacity = 1;
+
+    if (!res.ok) {
+      errBox.innerHTML = (data.errors || [data.error || 'Something went wrong']).map((x) => '· ' + x).join('<br>');
+      errBox.classList.remove('hidden');
+      return;
+    }
+
+    const s = data.subscription;
+    const fmt = (ds) => new Date(ds + 'T12:00:00').toLocaleDateString('en-ZA', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    document.getElementById('confirmDetails').innerHTML = `
+      <div><span class="text-ink font-600">Reference:</span> ${s.id}</div>
+      <div><span class="text-ink font-600">Package:</span> ${s.packageName} — ${R(s.pricePerDelivery)} per delivery</div>
+      <div><span class="text-ink font-600">Schedule:</span> ${s.frequencyName}, ${s.deliveryDayName}s</div>
+      <div><span class="text-ink font-600">Area:</span> ${s.areaName}</div>
+      <div><span class="text-ink font-600">First delivery:</span> ${fmt(data.firstDelivery)}</div>
+      <div><span class="text-ink font-600">First debit order:</span> ${R(data.firstDebit.amount)} on ${fmt(data.firstDebit.dueDate)} (${s.mandate.bankName} ${s.mandate.accountNumberMasked})</div>`;
+    form.classList.add('hidden');
+    document.querySelector('main .border-b.border-line').scrollIntoView();
+    document.getElementById('confirm').classList.remove('hidden');
+  });
+})();
+</script>
+</body>
+</html>

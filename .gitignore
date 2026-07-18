@@ -1,0 +1,3 @@
+# Local datastore — never commit customer data
+data/
+node_modules/
