@@ -71,7 +71,8 @@
 
       <!-- STEP 2: SCHEDULE -->
       <section class="mb-16">
-        <h2 class="font-display font-800 text-xl tracking-tight mb-7">2 · Choose your schedule</h2>
+        <h2 class="font-display font-800 text-xl tracking-tight mb-1">2 · Choose your schedule</h2>
+        <p class="text-[13px] text-ash mb-7">Deliveries arrive between 8AM and 5PM on your chosen day.</p>
         <div class="grid sm:grid-cols-2 gap-8 max-w-2xl">
           <div>
             <div class="font-display text-[10px] tracking-[0.25em] uppercase text-ash mb-3">Frequency</div>
@@ -177,7 +178,7 @@
 <footer class="border-t border-line py-8">
   <div class="mx-auto max-w-[1500px] px-5 md:px-10 flex flex-col md:flex-row justify-between gap-2 font-display text-[10px] tracking-[0.2em] uppercase text-ash">
     <span>© Peak Hydration · Bottled in South Africa</span>
-    <span>Deliveries Mondays &amp; Fridays · Serviced areas only</span>
+    <span>Deliveries Mondays &amp; Wednesdays, 8AM – 5PM · Serviced areas only</span>
   </div>
 </footer>
 
@@ -278,7 +279,7 @@
       <div><span class="text-ink font-600">Package:</span> ${s.packageName} — ${R(s.totalPerDelivery)} per delivery (${R(s.pricePerDelivery)} + ${R(s.deliveryFee)} delivery)</div>
       <div><span class="text-ink font-600">Schedule:</span> ${s.frequencyName}, ${s.deliveryDayName}s</div>
       <div><span class="text-ink font-600">Area:</span> ${s.areaName}</div>
-      <div><span class="text-ink font-600">First delivery:</span> ${fmt(data.firstDelivery)}</div>
+      <div><span class="text-ink font-600">First delivery:</span> ${fmt(data.firstDelivery)}, ${cfg.deliveryWindow}</div>
       <div><span class="text-ink font-600">First debit order:</span> ${R(data.firstDebit.amount)} on ${fmt(data.firstDebit.dueDate)} (${s.mandate.bankName} ${s.mandate.accountNumberMasked})</div>`;
     form.classList.add('hidden');
     document.querySelector('main .border-b.border-line').scrollIntoView();

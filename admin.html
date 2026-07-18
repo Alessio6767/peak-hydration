@@ -103,7 +103,7 @@
         <select id="rsArea" class="border border-line px-3 py-2 text-sm bg-white"></select>
       </div>
       <button id="rsNextMon" class="btn-s">Next Monday</button>
-      <button id="rsNextFri" class="btn-s">Next Friday</button>
+      <button id="rsNextWed" class="btn-s">Next Wednesday</button>
       <button id="rsAll" class="btn-s">All upcoming</button>
       <button onclick="window.print()" class="btn-s">Print run sheet</button>
     </div>
@@ -169,7 +169,7 @@ async function loadOverview() {
     tile('Est. monthly revenue', R(s.estimatedMonthlyRevenue), 'active subs only') +
     tile('Collected to date', R(s.totalCollected), 'debit orders') +
     tile('Pending debit orders', s.pendingDebitOrders, `${s.failedDebitOrders} failed`) +
-    tile('Deliveries next 7 days', s.deliveriesNext7Days, 'Mondays & Fridays');
+    tile('Deliveries next 7 days', s.deliveriesNext7Days, 'Mon & Wed · 8AM – 5PM');
 
   const areas = Object.values(s.byArea);
   const max = Math.max(1, ...areas.map((a) => a.active));
@@ -319,7 +319,7 @@ document.querySelectorAll('.tab').forEach((t) =>
   document.getElementById('rsDate').addEventListener('change', loadRunsheet);
   document.getElementById('rsArea').addEventListener('change', loadRunsheet);
   document.getElementById('rsNextMon').addEventListener('click', () => { document.getElementById('rsDate').value = nextWeekday(1); loadRunsheet(); });
-  document.getElementById('rsNextFri').addEventListener('click', () => { document.getElementById('rsDate').value = nextWeekday(5); loadRunsheet(); });
+  document.getElementById('rsNextWed').addEventListener('click', () => { document.getElementById('rsDate').value = nextWeekday(3); loadRunsheet(); });
   document.getElementById('rsAll').addEventListener('click', () => { document.getElementById('rsDate').value = ''; loadRunsheet(); });
   loadOverview();
 })();

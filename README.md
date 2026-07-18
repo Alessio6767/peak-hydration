@@ -31,9 +31,10 @@ node test/smoke.js      # end-to-end test of the whole subscription flow
 2 weeks R119 · monthly R89.
 
 **Schedule** — customers pick a frequency (weekly, every 2 weeks or monthly)
-and a fixed delivery day (Monday or Friday). The first delivery is the next
-occurrence of their day at least 3 days out; each following delivery is exactly
-7, 14 or 28 days later, so it always stays on the same weekday.
+and a fixed delivery day (Monday or Wednesday, deliveries between 8AM and 5PM).
+The first delivery is the next occurrence of their day at least 3 days out;
+each following delivery is exactly 7, 14 or 28 days later, so it always stays
+on the same weekday.
 
 **Areas / geotagging** — deliveries are limited to serviced areas (Centurion,
 Irene, Midrand, Pretoria East — edit in `lib/domain.js`). Every subscription is
@@ -55,7 +56,7 @@ to take real money.
 
 1. Customer subscribes on `/subscribe.html`.
 2. Before a delivery day, open the Ops dashboard and run debit orders.
-3. Open **Run sheet**, pick the date (Next Monday / Next Friday buttons), filter
+3. Open **Run sheet**, pick the date (Next Monday / Next Wednesday buttons), filter
    by area — it shows every stop plus the total truck load, and prints cleanly.
 4. Mark each stop delivered. That schedules the next delivery and raises the
    next debit order automatically.

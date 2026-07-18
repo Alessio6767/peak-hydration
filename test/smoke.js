@@ -30,7 +30,7 @@ async function post(u, body) {
 const signup = (over = {}) => ({
   name: 'Thabo Mokoena', email: 'thabo@example.com', phone: '0821234567',
   street: '12 Waterberg Street, Eldoraigne', areaId: 'centurion',
-  packageId: 'peak', frequency: 'biweekly', deliveryDay: 'friday',
+  packageId: 'peak', frequency: 'biweekly', deliveryDay: 'wednesday',
   mandateAccepted: true,
   bank: { bankName: 'FNB', accountHolder: 'T Mokoena', accountNumber: '62012345678', branchCode: '250655', ...(over.bank || {}) },
   ...over,
@@ -49,7 +49,8 @@ async function main() {
     const cfg = await get('/api/config');
     assert(Object.keys(cfg.packages).length === 3, 'config exposes exactly 3 packages');
     assert(cfg.areas.centurion && cfg.areas.centurion.lat < 0, 'Centurion area is geotagged');
-    assert(cfg.deliveryDays.monday && cfg.deliveryDays.friday && Object.keys(cfg.deliveryDays).length === 2, 'delivery days are Monday and Friday only');
+    assert(cfg.deliveryDays.monday && cfg.deliveryDays.wednesday && Object.keys(cfg.deliveryDays).length === 2, 'delivery days are Monday and Wednesday only');
+    assert(cfg.deliveryWindow === '8AM – 5PM', 'delivery window is 8AM – 5PM');
     assert(cfg.frequencies.weekly.intervalDays === 7 && cfg.frequencies.weekly.deliveryFee === 199, 'weekly frequency: 7 days, R199 delivery');
     assert(cfg.frequencies.biweekly.deliveryFee === 119 && cfg.frequencies.monthly.deliveryFee === 89, 'biweekly R119 / monthly R89 delivery charges');
 
@@ -62,7 +63,7 @@ async function main() {
     assert(s1.status === 201, 'valid signup creates subscription');
     const sub = s1.data.subscription;
     assert(sub.geotag.areaId === 'centurion', 'subscription geotagged to Centurion centroid');
-    assert(new Date(s1.data.firstDelivery + 'T12:00:00Z').getUTCDay() === 5, 'first delivery lands on a Friday');
+    assert(new Date(s1.data.firstDelivery + 'T12:00:00Z').getUTCDay() === 3, 'first delivery lands on a Wednesday');
     assert(s1.data.firstDebit.amount === 409 + 119, 'first debit is Peak R409 + biweekly delivery R119 = R528');
     assert(sub.mandate.accountNumberMasked.startsWith('****'), 'account number stored masked');
 
