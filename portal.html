@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Account | Peak Hydration</title>
+<meta name="robots" content="noindex" />
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ['Montserrat', 'Helvetica Neue', 'Arial', 'sans-serif'],
+          body: ['"Open Sans"', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        },
+        colors: { ink:'#0A0A0A', paper:'#FFFFFF', stone:'#B8B1A6', mist:'#F3F1ED', ash:'#6F6A63', line:'#E4E1DB' },
+      },
+    },
+  };
+</script>
+<style>
+  body { background:#F3F1ED; color:#0A0A0A; font-family:'Open Sans',sans-serif; }
+  .hidden { display:none; }
+  ::selection { background:#0A0A0A; color:#fff; }
+  .field { width:100%; background:#fff; border:1px solid #E4E1DB; padding:0.85rem 1rem; font-size:16px; border-radius:2px; }
+  .field:focus { outline:none; border-color:#0A0A0A; }
+  .flabel { display:block; font-family:'Montserrat',sans-serif; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:#6F6A63; font-weight:600; margin-bottom:6px; }
+  .btn-main { width:100%; background:#0A0A0A; color:#fff; padding:1rem; font-family:'Montserrat',sans-serif; font-size:12px; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; transition:background .2s; border-radius:2px; }
+  .btn-main:hover { background:#1F1F1F; }
+  .btn-main:disabled { opacity:.5; }
+  .badge { display:inline-flex; align-items:center; gap:6px; font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; }
+  .dot { width:7px; height:7px; border-radius:50%; display:inline-block; }
+</style>
+</head>
+<body>
+
+<header class="bg-white border-b border-line">
+  <div class="mx-auto max-w-lg px-5 h-16 flex items-center justify-between">
+    <a href="index.html" class="flex items-center select-none">
+      <img src="assets/logo-black.png" alt="Peak Hydration" class="h-[14px] w-auto" />
+    </a>
+    <button id="btnLogout" class="hidden font-display text-[11px] font-600 tracking-[0.15em] uppercase text-ash hover:text-ink transition-colors">Log out</button>
+  </div>
+</header>
+
+<main class="mx-auto max-w-lg px-5 py-8 pb-16">
+
+  <!-- LOGIN -->
+  <section id="login" class="hidden">
+    <h1 class="font-display font-800 text-2xl tracking-tight mb-1">Welcome back.</h1>
+    <p class="text-[14px] text-ash mb-7">Log in to see your deliveries and payments.</p>
+    <div class="space-y-5">
+      <div><label class="flabel" for="l-email">Email address</label><input id="l-email" type="email" autocomplete="email" class="field" placeholder="you@email.com" /></div>
+      <div><label class="flabel" for="l-pass">Password</label><input id="l-pass" type="password" autocomplete="current-password" class="field" placeholder="Your password" /></div>
+      <p id="l-err" class="hidden text-[13px]" style="color:#b3261e"></p>
+      <button id="btnLogin" class="btn-main">Log in →</button>
+      <p class="text-center text-[13px] text-ash">New here? <a href="subscribe.html" class="underline font-600 text-ink">Start a subscription</a></p>
+    </div>
+  </section>
+
+  <!-- PORTAL -->
+  <section id="portal" class="hidden">
+    <h1 id="greeting" class="font-display font-800 text-2xl tracking-tight mb-1"></h1>
+    <p id="subline" class="text-[14px] text-ash mb-6"></p>
+
+    <!-- payment call-to-action -->
+    <div id="payBox" class="hidden bg-ink text-white p-5 rounded-sm mb-4">
+      <div class="font-display text-[10px] tracking-[0.2em] uppercase text-white/60 mb-1">One last step</div>
+      <div id="payText" class="font-display font-800 text-lg leading-snug mb-4"></div>
+      <button id="btnPay" class="w-full bg-white text-ink py-3.5 font-display text-[12px] font-700 tracking-[0.2em] uppercase hover:bg-stone transition-colors rounded-sm">Finish payment</button>
+      <p id="payErr" class="hidden mt-3 text-[13px]" style="color:#ffb4a8"></p>
+    </div>
+    <div id="paidBox" class="hidden bg-white border border-line p-5 rounded-sm mb-4">
+      <div class="badge"><span class="dot" style="background:#2f7d4f"></span>You're all set</div>
+      <div id="paidText" class="mt-2 text-[14px] text-ash"></div>
+    </div>
+
+    <!-- subscription details -->
+    <div class="bg-white border border-line rounded-sm divide-y divide-line text-[13px] mb-4" id="details"></div>
+
+    <!-- payment history -->
+    <div class="bg-white border border-line rounded-sm mb-4">
+      <div class="px-4 py-3 font-display text-[10px] tracking-[0.2em] uppercase text-ash border-b border-line">Payments</div>
+      <div id="txns" class="divide-y divide-line text-[13px]"></div>
+    </div>
+
+    <p class="text-[12px] text-ash text-center">Need to change or cancel? WhatsApp us on <a class="underline" href="https://wa.me/27660584665" target="_blank" rel="noopener">066 058 4665</a>.</p>
+  </section>
+
+  <p class="mt-10 text-center font-display text-[9px] tracking-[0.2em] uppercase text-ash">© Peak Hydration · Deliveries Mon &amp; Wed, 8AM – 5PM</p>
+</main>
+
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const R = (n) => 'R' + Number(n).toLocaleString('en-ZA');
+  const fmt = (ds) => ds ? new Date(ds + 'T12:00:00').toLocaleDateString('en-ZA', { weekday: 'long', day: 'numeric', month: 'long' }) : '—';
+  const token = () => localStorage.getItem('peak-token');
+  const auth = () => ({ Authorization: 'Bearer ' + token() });
+
+  function showLogin() {
+    $('login').classList.remove('hidden');
+    $('portal').classList.add('hidden');
+    $('btnLogout').classList.add('hidden');
+  }
+
+  async function load() {
+    if (!token()) return showLogin();
+    const res = await fetch('/api/me', { headers: auth() }).catch(() => null);
+    if (!res || !res.ok) { localStorage.removeItem('peak-token'); return showLogin(); }
+    const me = await res.json();
+    const s = me.subscription;
+
+    $('login').classList.add('hidden');
+    $('portal').classList.remove('hidden');
+    $('btnLogout').classList.remove('hidden');
+
+    const firstName = s.name.split(' ')[0];
+    const isNew = new URLSearchParams(location.search).get('welcome') === '1';
+    $('greeting').textContent = (isNew ? 'Welcome, ' : 'Hi, ') + firstName + '.';
+    $('subline').textContent = isNew ? 'Your account is ready — here is everything in one place.' : 'Here is your subscription at a glance.';
+
+    if (me.openDebit) {
+      $('payBox').classList.remove('hidden');
+      $('paidBox').classList.add('hidden');
+      $('payText').textContent = `Pay ${R(me.openDebit.amount)} to confirm your ${me.upcomingDelivery ? fmt(me.upcomingDelivery.date) : 'first'} delivery.`;
+    } else {
+      $('payBox').classList.add('hidden');
+      $('paidBox').classList.remove('hidden');
+      $('paidText').textContent = me.upcomingDelivery
+        ? `Your next delivery is ${fmt(me.upcomingDelivery.date)}, ${me.deliveryWindow}.`
+        : 'No upcoming delivery scheduled.';
+    }
+
+    const row = (k, v) => `<div class="flex justify-between gap-4 px-4 py-3"><span class="text-ash">${k}</span><span class="font-600 text-right">${v}</span></div>`;
+    const statusColor = { active: '#2f7d4f', paused: '#B8B1A6', suspended: '#b3261e', cancelled: '#6F6A63' }[s.status] || '#6F6A63';
+    $('details').innerHTML =
+      row('Status', `<span class="badge"><span class="dot" style="background:${statusColor}"></span>${s.status}</span>`) +
+      row('Package', `${s.packageName} — ${R(s.totalPerDelivery)}/delivery`) +
+      row('Includes', s.contents.map((c) => `${c.qty} × ${c.name}`).join('<br>')) +
+      row('Schedule', `${s.frequencyName}, ${s.deliveryDayName}s, ${me.deliveryWindow}`) +
+      row('Deliver to', `${s.street}, ${s.areaName}`) +
+      row('Next delivery', me.upcomingDelivery ? fmt(me.upcomingDelivery.date) : '—') +
+      row('Debit from', `${s.mandate.bankName} ${s.mandate.accountNumberMasked}`);
+
+    $('txns').innerHTML = me.transactions.length
+      ? me.transactions.map((t) => `<div class="flex justify-between gap-4 px-4 py-3">
+          <span class="text-ash">${fmt(t.date)}</span><span>${R(t.amount)}</span>
+          <span class="badge"><span class="dot" style="background:${t.status === 'success' ? '#2f7d4f' : '#b3261e'}"></span>${t.status === 'success' ? 'Paid' : 'Failed'}</span>
+        </div>`).join('')
+      : '<div class="px-4 py-3 text-ash">No payments yet — your first debit happens above.</div>';
+  }
+
+  $('btnPay').addEventListener('click', async () => {
+    const btn = $('btnPay');
+    btn.disabled = true;
+    btn.textContent = 'Processing…';
+    const res = await fetch('/api/me/pay', { method: 'POST', headers: auth() }).catch(() => null);
+    const data = res ? await res.json() : { error: 'Could not reach the server — please try again.' };
+    btn.disabled = false;
+    btn.textContent = 'Finish payment';
+    if (!res || !res.ok) {
+      $('payErr').textContent = data.error || 'Payment failed — please try again.';
+      $('payErr').classList.remove('hidden');
+      return;
+    }
+    history.replaceState(null, '', 'portal.html');
+    load();
+  });
+
+  $('btnLogin').addEventListener('click', async () => {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: $('l-email').value, password: $('l-pass').value }),
+    }).catch(() => null);
+    const data = res ? await res.json() : { error: 'Could not reach the server — please try again.' };
+    if (!res || !res.ok) {
+      $('l-err').textContent = data.error || 'Login failed.';
+      $('l-err').classList.remove('hidden');
+      return;
+    }
+    localStorage.setItem('peak-token', data.token);
+    load();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !$('login').classList.contains('hidden')) $('btnLogin').click();
+  });
+
+  $('btnLogout').addEventListener('click', () => { localStorage.removeItem('peak-token'); showLogin(); });
+
+  load();
+})();
+</script>
+</body>
+</html>

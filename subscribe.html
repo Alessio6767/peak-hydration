@@ -4,11 +4,11 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Subscribe | Peak Hydration Home Delivery</title>
-<meta name="description" content="Peak Hydration home delivery subscriptions. Choose your package, your day, your area — we deliver every two weeks or monthly and collect by debit order." />
+<meta name="description" content="Peak Hydration home delivery subscriptions. Five quick steps: your details, address, package, banking, account — done." />
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
   tailwind.config = {
@@ -19,272 +19,301 @@
           body: ['"Open Sans"', 'Helvetica Neue', 'Arial', 'sans-serif'],
         },
         colors: { ink:'#0A0A0A', paper:'#FFFFFF', carbon:'#1F1F1F', stone:'#B8B1A6', mist:'#F3F1ED', ash:'#6F6A63', line:'#E4E1DB' },
-        letterSpacing: { mega: '-0.035em' },
       },
     },
   };
 </script>
 <style>
-  body { background:#fff; color:#0A0A0A; font-family:'Open Sans',sans-serif; }
-  .hidden { display:none; } /* fallback if the Tailwind CDN hasn't loaded */
+  body { background:#F3F1ED; color:#0A0A0A; font-family:'Open Sans',sans-serif; }
+  .hidden { display:none; }
   ::selection { background:#0A0A0A; color:#fff; }
-  .field { width:100%; background:transparent; border-bottom:1px solid #0A0A0A; padding:0.75rem 0; font-size:1rem; }
-  .field:focus { outline:none; border-color:#B8B1A6; }
-  .choice input { position:absolute; opacity:0; }
-  .choice span { display:block; border:1px solid #E4E1DB; padding:0.9rem 1rem; text-align:center; cursor:pointer; transition:all .3s;
-    font-family:'Montserrat',sans-serif; font-size:12px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; }
-  .choice input:checked + span { background:#0A0A0A; color:#fff; border-color:#0A0A0A; }
-  .pkg { cursor:pointer; }
+  .field { width:100%; background:#fff; border:1px solid #E4E1DB; padding:0.85rem 1rem; font-size:16px; border-radius:2px; }
+  .field:focus { outline:none; border-color:#0A0A0A; }
+  .field.err { border-color:#b3261e; }
+  .flabel { display:block; font-family:'Montserrat',sans-serif; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:#6F6A63; font-weight:600; margin-bottom:6px; }
+  .ferr { display:none; margin-top:6px; font-size:12px; color:#b3261e; }
+  .ferr.show { display:block; }
+  .btn-next { width:100%; background:#0A0A0A; color:#fff; padding:1rem; font-family:'Montserrat',sans-serif; font-size:12px; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; transition:background .2s; border-radius:2px; }
+  .btn-next:hover { background:#1F1F1F; }
+  .btn-next:disabled { opacity:.5; }
+  .btn-back { font-family:'Montserrat',sans-serif; font-size:11px; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; color:#6F6A63; }
+  .btn-back:hover { color:#0A0A0A; }
+  .seg { position:relative; }
+  .seg input { position:absolute; opacity:0; }
+  .seg span { display:block; background:#fff; border:1px solid #E4E1DB; padding:0.8rem 0.4rem; text-align:center; cursor:pointer; transition:all .2s; border-radius:2px;
+    font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; }
+  .seg input:checked + span { background:#0A0A0A; color:#fff; border-color:#0A0A0A; }
+  .pkg { position:relative; display:block; cursor:pointer; }
   .pkg input { position:absolute; opacity:0; }
-  .pkg .card { border:1px solid #E4E1DB; transition:all .3s; height:100%; }
-  .pkg input:checked + .card { border-color:#0A0A0A; box-shadow:0 0 0 1px #0A0A0A; }
+  .pkg .card { display:flex; gap:14px; align-items:center; background:#fff; border:1px solid #E4E1DB; padding:12px; transition:all .2s; border-radius:2px; }
+  .pkg input:checked + .card { border-color:#0A0A0A; box-shadow:0 0 0 1.5px #0A0A0A; }
+  .pkg .tick { display:none; }
+  .pkg input:checked + .card .tick { display:flex; }
+  .step { display:none; }
+  .step.active { display:block; animation:fadeIn .3s ease; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
 </style>
 </head>
 <body>
 
-<header class="fixed top-0 left-0 right-0 z-50 bg-paper/90 backdrop-blur-md border-b border-line">
-  <div class="mx-auto max-w-[1500px] px-5 md:px-10 h-16 md:h-20 flex items-center justify-between">
+<header class="bg-white border-b border-line">
+  <div class="mx-auto max-w-lg px-5 h-16 flex items-center justify-between">
     <a href="index.html" class="flex items-center select-none">
-      <img src="assets/logo-black.png" alt="Peak Hydration" class="h-[15px] md:h-[18px] w-auto" />
+      <img src="assets/logo-black.png" alt="Peak Hydration" class="h-[14px] w-auto" />
     </a>
-    <a href="index.html" class="font-display text-[12px] font-600 tracking-[0.18em] uppercase hover:text-ash transition-colors">&larr; Back to site</a>
+    <a href="portal.html" class="font-display text-[11px] font-600 tracking-[0.15em] uppercase text-ash hover:text-ink transition-colors">Log in</a>
   </div>
 </header>
 
-<main class="pt-28 md:pt-40 pb-24">
-  <div class="mx-auto max-w-[1100px] px-5 md:px-10">
+<main class="mx-auto max-w-lg px-5 py-8 pb-16">
 
-    <div class="border-b border-line pb-10 mb-14">
-      <span class="font-display text-[11px] tracking-[0.3em] uppercase text-ash">Home Delivery Subscriptions</span>
-      <h1 class="mt-5 font-display font-900 tracking-mega leading-[0.95]" style="font-size:clamp(2.4rem,7vw,5rem)">WATER, ON<br>YOUR SCHEDULE.</h1>
-      <p class="mt-6 max-w-lg text-[15px] leading-relaxed text-ash">Pick a package, pick your day, and we'll keep your household stocked — delivered to your door weekly, every two weeks or monthly, collected by debit order. Delivery from R89 per drop, depending on your frequency.</p>
+  <!-- progress -->
+  <div id="progress" class="mb-8">
+    <div class="flex items-baseline justify-between mb-2">
+      <span id="stepLabel" class="font-display font-800 text-lg tracking-tight"></span>
+      <span id="stepCount" class="font-display text-[11px] tracking-[0.15em] uppercase text-ash"></span>
     </div>
+    <div class="bg-line h-1 rounded-full overflow-hidden"><div id="bar" class="bg-ink h-1 transition-all duration-300" style="width:20%"></div></div>
+  </div>
 
-    <form id="subForm" novalidate>
+  <!-- STEP 1: YOU -->
+  <section class="step" data-step="1" data-label="Let's get you set up">
+    <p class="text-[14px] leading-relaxed text-ash mb-6">Water delivered to your door, on a schedule you choose. First things first — who are we delivering to?</p>
+    <div class="space-y-5">
+      <div><label class="flabel" for="f-name">Full name</label><input id="f-name" type="text" autocomplete="name" class="field" placeholder="e.g. Naledi Khumalo" /><p class="ferr" id="e-name">Please enter your full name.</p></div>
+      <div><label class="flabel" for="f-email">Email address</label><input id="f-email" type="email" autocomplete="email" class="field" placeholder="you@email.com" /><p class="ferr" id="e-email">That email doesn't look right — please check it.</p></div>
+      <div><label class="flabel" for="f-phone">Mobile number</label><input id="f-phone" type="tel" autocomplete="tel" inputmode="tel" class="field" placeholder="066 000 0000" /><p class="ferr" id="e-phone">Please enter a valid South African number.</p></div>
+    </div>
+  </section>
 
-      <!-- STEP 1: PACKAGE -->
-      <section class="mb-16">
-        <h2 class="font-display font-800 text-xl tracking-tight mb-1">1 · Choose your package</h2>
-        <p class="text-[13px] text-ash mb-7">Package prices are per delivery. Your delivery charge depends on the frequency you pick in step 2.</p>
-        <div id="pkgGrid" class="grid md:grid-cols-3 gap-3 md:gap-4"></div>
-      </section>
+  <!-- STEP 2: ADDRESS -->
+  <section class="step" data-step="2" data-label="Where do we deliver?">
+    <p class="text-[14px] leading-relaxed text-ash mb-6">We deliver Mondays and Wednesdays, 8AM – 5PM, in selected areas.</p>
+    <div class="space-y-5">
+      <div><label class="flabel" for="f-area">Delivery area</label><select id="f-area" class="field cursor-pointer"></select><p class="ferr" id="e-area">Please choose your area — we only deliver in the areas listed.</p></div>
+      <div><label class="flabel" for="f-street">Street address</label><input id="f-street" type="text" autocomplete="street-address" class="field" placeholder="12 Waterberg Street, Eldoraigne" /><p class="ferr" id="e-street">Please enter your street address.</p></div>
+    </div>
+  </section>
 
-      <!-- STEP 2: SCHEDULE -->
-      <section class="mb-16">
-        <h2 class="font-display font-800 text-xl tracking-tight mb-1">2 · Choose your schedule</h2>
-        <p class="text-[13px] text-ash mb-7">Deliveries arrive between 8AM and 5PM on your chosen day.</p>
-        <div class="grid sm:grid-cols-2 gap-8 max-w-2xl">
-          <div>
-            <div class="font-display text-[10px] tracking-[0.25em] uppercase text-ash mb-3">Frequency</div>
-            <div id="freqGrid" class="grid grid-cols-3 gap-2"></div>
-          </div>
-          <div>
-            <div class="font-display text-[10px] tracking-[0.25em] uppercase text-ash mb-3">Delivery day</div>
-            <div id="dayGrid" class="grid grid-cols-2 gap-2"></div>
-          </div>
-        </div>
-      </section>
+  <!-- STEP 3: SUBSCRIPTION -->
+  <section class="step" data-step="3" data-label="Choose your water">
+    <p class="text-[14px] leading-relaxed text-ash mb-6">Pick a package, then tell us how often and on which day.</p>
+    <div id="pkgList" class="space-y-3"></div>
+    <div class="mt-7">
+      <span class="flabel">How often?</span>
+      <div id="freqGrid" class="grid grid-cols-3 gap-2"></div>
+    </div>
+    <div class="mt-6">
+      <span class="flabel">Which day?</span>
+      <div id="dayGrid" class="grid grid-cols-2 gap-2"></div>
+      <p class="mt-2 text-[12px] text-ash">Delivered between 8AM and 5PM.</p>
+    </div>
+    <div class="mt-7 bg-white border border-line p-4 rounded-sm flex items-baseline justify-between">
+      <span class="font-display text-[10px] tracking-[0.2em] uppercase text-ash">Your total</span>
+      <span id="totalLine" class="font-display font-800 text-lg"></span>
+    </div>
+    <p id="totalDetail" class="mt-2 text-[12px] text-ash text-right"></p>
+  </section>
 
-      <!-- STEP 3: WHERE -->
-      <section class="mb-16">
-        <h2 class="font-display font-800 text-xl tracking-tight mb-1">3 · Where do we deliver?</h2>
-        <p class="text-[13px] text-ash mb-7">We currently service selected areas only. Your address is geotagged to its area for routing.</p>
-        <div class="grid sm:grid-cols-2 gap-8 max-w-2xl">
-          <div>
-            <label for="f-area" class="font-display text-[10px] tracking-[0.25em] uppercase text-ash">Delivery area</label>
-            <select id="f-area" class="field mt-2 cursor-pointer"></select>
-          </div>
-          <div>
-            <label for="f-street" class="font-display text-[10px] tracking-[0.25em] uppercase text-ash">Street address</label>
-            <input id="f-street" type="text" class="field mt-2" placeholder="12 Waterberg Street, Eldoraigne" />
-          </div>
-        </div>
-      </section>
-
-      <!-- STEP 4: CONTACT -->
-      <section class="mb-16">
-        <h2 class="font-display font-800 text-xl tracking-tight mb-7">4 · Your details</h2>
-        <div class="grid sm:grid-cols-3 gap-8 max-w-3xl">
-          <div>
-            <label for="f-name" class="font-display text-[10px] tracking-[0.25em] uppercase text-ash">Full name</label>
-            <input id="f-name" type="text" class="field mt-2" placeholder="Your name" />
-          </div>
-          <div>
-            <label for="f-email" class="font-display text-[10px] tracking-[0.25em] uppercase text-ash">Email</label>
-            <input id="f-email" type="email" class="field mt-2" placeholder="you@email.com" />
-          </div>
-          <div>
-            <label for="f-phone" class="font-display text-[10px] tracking-[0.25em] uppercase text-ash">Phone</label>
-            <input id="f-phone" type="tel" class="field mt-2" placeholder="066 000 0000" />
-          </div>
-        </div>
-      </section>
-
-      <!-- STEP 5: DEBIT ORDER -->
-      <section class="mb-16">
-        <h2 class="font-display font-800 text-xl tracking-tight mb-1">5 · Debit order details</h2>
-        <p class="text-[13px] text-ash mb-7">Each delivery is collected by debit order three days before your delivery day. <span class="text-ink font-600">Demo environment — a simulated bank account is used; no real money moves.</span></p>
-        <div class="grid sm:grid-cols-2 gap-8 max-w-2xl">
-          <div>
-            <label for="f-bank" class="font-display text-[10px] tracking-[0.25em] uppercase text-ash">Bank</label>
-            <input id="f-bank" type="text" class="field mt-2" placeholder="e.g. FNB, Capitec, Standard Bank" />
-          </div>
-          <div>
-            <label for="f-holder" class="font-display text-[10px] tracking-[0.25em] uppercase text-ash">Account holder</label>
-            <input id="f-holder" type="text" class="field mt-2" placeholder="Name on the account" />
-          </div>
-          <div>
-            <label for="f-accno" class="font-display text-[10px] tracking-[0.25em] uppercase text-ash">Account number</label>
-            <input id="f-accno" type="text" inputmode="numeric" class="field mt-2" placeholder="8–12 digits" />
-          </div>
-          <div>
-            <label for="f-branch" class="font-display text-[10px] tracking-[0.25em] uppercase text-ash">Branch code</label>
-            <input id="f-branch" type="text" inputmode="numeric" class="field mt-2" placeholder="6 digits" />
-          </div>
-        </div>
-        <label class="mt-8 flex items-start gap-3 max-w-2xl cursor-pointer select-none">
-          <input id="f-mandate" type="checkbox" class="mt-1 w-4 h-4 accent-black" />
-          <span class="text-[13px] leading-relaxed text-ash">I authorise Peak Hydration to collect the subscription amount from the account above by debit order, three days before each scheduled delivery, until this subscription is paused or cancelled.</span>
-        </label>
-      </section>
-
-      <!-- SUMMARY + SUBMIT -->
-      <section class="border border-line bg-mist p-7 md:p-10 max-w-3xl">
-        <div class="font-display text-[10px] tracking-[0.25em] uppercase text-ash">Your subscription</div>
-        <div id="summary" class="mt-3 font-display font-800 text-xl tracking-tight">—</div>
-        <div id="errors" class="hidden mt-5 text-[13px] leading-relaxed text-red-700"></div>
-        <button type="submit" id="submitBtn" class="mt-8 inline-flex items-center gap-3 bg-ink text-white px-9 py-4 font-display text-[12px] font-700 tracking-[0.2em] uppercase hover:bg-stone hover:text-ink transition-colors">
-          Start my subscription
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </button>
-      </section>
-    </form>
-
-    <!-- CONFIRMATION -->
-    <div id="confirm" class="hidden">
-      <div class="border border-ink p-8 md:p-14 text-center max-w-3xl mx-auto">
-        <span class="font-display text-[11px] tracking-[0.3em] uppercase text-ash">Subscription active</span>
-        <h2 class="mt-5 font-display font-900 tracking-mega leading-[0.95]" style="font-size:clamp(2rem,5vw,3.6rem)">YOU'RE ON<br>THE ROUTE.</h2>
-        <div id="confirmDetails" class="mt-8 text-left inline-block text-[14px] leading-loose text-ash"></div>
-        <div class="mt-10">
-          <a href="index.html" class="inline-flex items-center gap-3 border border-ink text-ink px-8 py-4 font-display text-[12px] font-700 tracking-[0.2em] uppercase hover:bg-ink hover:text-white transition-colors">Back to Peak Hydration</a>
-        </div>
+  <!-- STEP 4: BANKING -->
+  <section class="step" data-step="4" data-label="Banking details">
+    <p class="text-[14px] leading-relaxed text-ash mb-6">We collect by debit order three days before each delivery — no cards, no hassle. <span class="text-ink font-600">Demo: a simulated bank account is used, no real money moves.</span></p>
+    <div class="space-y-5">
+      <div><label class="flabel" for="f-bank">Bank</label><input id="f-bank" type="text" class="field" placeholder="e.g. FNB, Capitec, Standard Bank" /><p class="ferr" id="e-bank">Please enter your bank's name.</p></div>
+      <div><label class="flabel" for="f-holder">Account holder</label><input id="f-holder" type="text" class="field" placeholder="Name on the account" /><p class="ferr" id="e-holder">Please enter the account holder's name.</p></div>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="flabel" for="f-accno">Account number</label><input id="f-accno" type="text" inputmode="numeric" class="field" placeholder="8–12 digits" /><p class="ferr" id="e-accno">8–12 digits, numbers only.</p></div>
+        <div><label class="flabel" for="f-branch">Branch code</label><input id="f-branch" type="text" inputmode="numeric" class="field" placeholder="6 digits" /><p class="ferr" id="e-branch">6 digits.</p></div>
       </div>
+      <label class="flex items-start gap-3 cursor-pointer select-none bg-white border border-line p-4 rounded-sm">
+        <input id="f-mandate" type="checkbox" class="mt-0.5 w-5 h-5 accent-black flex-none" />
+        <span class="text-[13px] leading-relaxed text-ash">I authorise Peak Hydration to collect my subscription by debit order, three days before each delivery, until I pause or cancel.</span>
+      </label>
+      <p class="ferr" id="e-mandate">Please accept the debit order mandate to continue.</p>
     </div>
+  </section>
 
+  <!-- STEP 5: ACCOUNT -->
+  <section class="step" data-step="5" data-label="Create your account">
+    <p class="text-[14px] leading-relaxed text-ash mb-6">Last step. Your details are saved — just choose a password and you're in.</p>
+    <div id="recap" class="bg-white border border-line rounded-sm divide-y divide-line mb-6 text-[13px]"></div>
+    <div class="space-y-5">
+      <div><label class="flabel" for="f-pass">Choose a password</label><input id="f-pass" type="password" autocomplete="new-password" class="field" placeholder="At least 6 characters" /><p class="ferr" id="e-pass">At least 6 characters, please.</p></div>
+      <div><label class="flabel" for="f-pass2">Repeat password</label><input id="f-pass2" type="password" autocomplete="new-password" class="field" placeholder="Same again" /><p class="ferr" id="e-pass2">The passwords don't match.</p></div>
+    </div>
+    <p class="ferr mt-4" id="e-server"></p>
+  </section>
+
+  <!-- nav -->
+  <div class="mt-8 space-y-4">
+    <button id="btnNext" class="btn-next">Next →</button>
+    <div class="text-center"><button id="btnBack" class="btn-back hidden">← Go back</button></div>
   </div>
+
+  <p class="mt-10 text-center font-display text-[9px] tracking-[0.2em] uppercase text-ash">© Peak Hydration · Deliveries Mon &amp; Wed, 8AM – 5PM</p>
 </main>
-
-<footer class="border-t border-line py-8">
-  <div class="mx-auto max-w-[1500px] px-5 md:px-10 flex flex-col md:flex-row justify-between gap-2 font-display text-[10px] tracking-[0.2em] uppercase text-ash">
-    <span>© Peak Hydration · Bottled in South Africa</span>
-    <span>Deliveries Mondays &amp; Wednesdays, 8AM – 5PM · Serviced areas only</span>
-  </div>
-</footer>
 
 <script>
 (async function () {
   const cfg = await fetch('/api/config').then((r) => r.json());
   const R = (n) => 'R' + n.toLocaleString('en-ZA');
+  const $ = (id) => document.getElementById(id);
 
-  document.getElementById('pkgGrid').innerHTML = Object.values(cfg.packages).map((p, i) => `
-    <label class="pkg relative">
+  // ---- render dynamic bits ----
+  $('pkgList').innerHTML = Object.values(cfg.packages).map((p, i) => `
+    <label class="pkg">
       <input type="radio" name="pkg" value="${p.id}" ${i === 0 ? 'checked' : ''} />
-      <div class="card bg-white flex flex-col">
-        <div class="overflow-hidden bg-mist"><img src="${p.image}" alt="${p.name} package" class="w-full aspect-[4/3] object-cover" loading="lazy" /></div>
-        <div class="p-6 flex flex-col flex-1">
-          <div class="flex items-baseline justify-between">
-            <h3 class="font-display font-800 text-lg tracking-tight">${p.name}</h3>
-            ${p.badge ? `<span class="font-display text-[9px] tracking-[0.2em] uppercase bg-ink text-white px-2 py-1">${p.badge}</span>` : ''}
+      <div class="card">
+        <img src="${p.image}" alt="" class="w-20 h-20 object-cover bg-mist flex-none rounded-sm" />
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="font-display font-800 text-[15px]">${p.name}</span>
+            ${p.badge ? `<span class="font-display text-[8px] tracking-[0.15em] uppercase bg-ink text-white px-1.5 py-0.5 rounded-sm">${p.badge}</span>` : ''}
           </div>
-          <p class="mt-2 text-[13px] leading-relaxed text-ash flex-1">${p.tagline}</p>
-          <ul class="mt-4 text-[12px] text-ash space-y-1">
-            ${p.items.map((it) => `<li>· ${it.qty} × ${cfg.products[it.productId].name}</li>`).join('')}
-          </ul>
-          <div class="mt-4 font-display font-800 text-xl">${R(p.pricePerDelivery)}<span class="text-[11px] font-600 text-ash tracking-normal"> per delivery, excl. delivery charge</span></div>
+          <div class="text-[12px] text-ash mt-0.5">${p.items.map((it) => `${it.qty} × ${cfg.products[it.productId].name}`).join(' + ')}</div>
+          <div class="font-display font-800 text-[15px] mt-1">${R(p.pricePerDelivery)}<span class="text-[10px] font-600 text-ash"> / delivery</span></div>
         </div>
+        <div class="tick w-6 h-6 rounded-full bg-ink text-white items-center justify-center flex-none text-[13px]">✓</div>
       </div>
     </label>`).join('');
 
-  document.getElementById('freqGrid').innerHTML = Object.values(cfg.frequencies).map((f, i) => `
-    <label class="choice relative"><input type="radio" name="freq" value="${f.id}" ${i === 0 ? 'checked' : ''} /><span>${f.name}<br><em class="not-italic normal-case tracking-normal font-body font-400 text-[11px]">${R(f.deliveryFee)} delivery</em></span></label>`).join('');
+  $('freqGrid').innerHTML = Object.values(cfg.frequencies).map((f, i) => `
+    <label class="seg"><input type="radio" name="freq" value="${f.id}" ${i === 0 ? 'checked' : ''} />
+    <span>${f.name.replace('Every 2 weeks', '2-Weekly')}<br><em class="not-italic font-body font-normal normal-case tracking-normal text-[11px] opacity-80">+${R(f.deliveryFee)} delivery</em></span></label>`).join('');
 
-  document.getElementById('dayGrid').innerHTML = Object.values(cfg.deliveryDays).map((d, i) => `
-    <label class="choice relative"><input type="radio" name="day" value="${d.id}" ${i === 0 ? 'checked' : ''} /><span>${d.name}</span></label>`).join('');
+  $('dayGrid').innerHTML = Object.values(cfg.deliveryDays).map((d, i) => `
+    <label class="seg"><input type="radio" name="day" value="${d.id}" ${i === 0 ? 'checked' : ''} /><span>${d.name}</span></label>`).join('');
 
-  document.getElementById('f-area').innerHTML =
-    '<option value="">Select your area…</option>' +
+  $('f-area').innerHTML = '<option value="">Choose your area…</option>' +
     Object.values(cfg.areas).map((a) => `<option value="${a.id}">${a.name}</option>`).join('');
 
-  const form = document.getElementById('subForm');
-  const val = (name) => form.querySelector(`input[name="${name}"]:checked`).value;
+  const picked = (n) => document.querySelector(`input[name="${n}"]:checked`).value;
 
-  function updateSummary() {
-    const p = cfg.packages[val('pkg')];
-    const f = cfg.frequencies[val('freq')];
-    const d = cfg.deliveryDays[val('day')];
-    const total = p.pricePerDelivery + f.deliveryFee;
-    document.getElementById('summary').innerHTML =
-      `${p.name} · ${R(total)} per delivery · ${f.name.toLowerCase()}, ${d.name}s` +
-      `<div class="mt-1 font-body font-400 text-[12px] text-ash tracking-normal">${R(p.pricePerDelivery)} package + ${R(f.deliveryFee)} delivery charge</div>`;
+  function updateTotal() {
+    const p = cfg.packages[picked('pkg')];
+    const f = cfg.frequencies[picked('freq')];
+    $('totalLine').textContent = R(p.pricePerDelivery + f.deliveryFee) + ' per delivery';
+    $('totalDetail').textContent = `${p.name} ${R(p.pricePerDelivery)} + delivery ${R(f.deliveryFee)} · ${f.name.toLowerCase()}`;
   }
-  form.addEventListener('change', updateSummary);
-  updateSummary();
+  document.addEventListener('change', (e) => { if (e.target.name === 'pkg' || e.target.name === 'freq') updateTotal(); });
+  updateTotal();
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const btn = document.getElementById('submitBtn');
-    const errBox = document.getElementById('errors');
+  // ---- wizard engine ----
+  const steps = [...document.querySelectorAll('.step')];
+  let current = 1;
+
+  function show(n) {
+    current = n;
+    steps.forEach((s) => s.classList.toggle('active', Number(s.dataset.step) === n));
+    const label = steps[n - 1].dataset.label;
+    $('stepLabel').textContent = label;
+    $('stepCount').textContent = `Step ${n} of ${steps.length}`;
+    $('bar').style.width = (n / steps.length) * 100 + '%';
+    $('btnBack').classList.toggle('hidden', n === 1);
+    $('btnNext').textContent = n === steps.length ? 'Create account & finish →' : 'Next →';
+    if (n === steps.length) buildRecap();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const first = steps[n - 1].querySelector('input:not([type=radio]):not([type=checkbox]), select');
+    if (first && window.innerWidth > 700) first.focus();
+  }
+
+  function setErr(id, on) {
+    const el = $('e-' + id);
+    if (el) el.classList.toggle('show', on);
+    const field = $('f-' + id);
+    if (field) field.classList.toggle('err', on);
+    return !on;
+  }
+
+  const validators = {
+    1() {
+      let ok = true;
+      ok = setErr('name', $('f-name').value.trim().length < 2) && ok;
+      ok = setErr('email', !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test($('f-email').value)) && ok;
+      ok = setErr('phone', $('f-phone').value.replace(/\D/g, '').length < 9) && ok;
+      return ok;
+    },
+    2() {
+      let ok = true;
+      ok = setErr('area', !$('f-area').value) && ok;
+      ok = setErr('street', $('f-street').value.trim().length < 4) && ok;
+      return ok;
+    },
+    3: () => true,
+    4() {
+      let ok = true;
+      ok = setErr('bank', $('f-bank').value.trim().length < 2) && ok;
+      ok = setErr('holder', $('f-holder').value.trim().length < 2) && ok;
+      ok = setErr('accno', !/^\d{8,12}$/.test($('f-accno').value.replace(/\s/g, ''))) && ok;
+      ok = setErr('branch', !/^\d{6}$/.test($('f-branch').value.trim())) && ok;
+      ok = setErr('mandate', !$('f-mandate').checked) && ok;
+      return ok;
+    },
+    5() {
+      let ok = true;
+      ok = setErr('pass', $('f-pass').value.length < 6) && ok;
+      ok = setErr('pass2', $('f-pass2').value !== $('f-pass').value) && ok;
+      return ok;
+    },
+  };
+
+  function buildRecap() {
+    const p = cfg.packages[picked('pkg')];
+    const f = cfg.frequencies[picked('freq')];
+    const d = cfg.deliveryDays[picked('day')];
+    const row = (k, v) => `<div class="flex justify-between gap-4 px-4 py-2.5"><span class="text-ash">${k}</span><span class="font-600 text-right">${v}</span></div>`;
+    $('recap').innerHTML =
+      row('Name', $('f-name').value.trim()) +
+      row('Deliver to', `${$('f-street').value.trim()}, ${cfg.areas[$('f-area').value].name}`) +
+      row('Package', `${p.name} — ${R(p.pricePerDelivery + f.deliveryFee)}/delivery`) +
+      row('Schedule', `${f.name}, ${d.name}s, 8AM – 5PM`) +
+      row('Debit from', `${$('f-bank').value.trim()} ····${$('f-accno').value.replace(/\s/g, '').slice(-4)}`);
+  }
+
+  $('btnBack').addEventListener('click', () => show(current - 1));
+
+  $('btnNext').addEventListener('click', async () => {
+    if (!validators[current]()) return;
+    if (current < steps.length) return show(current + 1);
+
+    // final submit
+    const btn = $('btnNext');
     btn.disabled = true;
-    btn.style.opacity = 0.5;
-    errBox.classList.add('hidden');
-
-    const payload = {
-      name: document.getElementById('f-name').value,
-      email: document.getElementById('f-email').value,
-      phone: document.getElementById('f-phone').value,
-      street: document.getElementById('f-street').value,
-      areaId: document.getElementById('f-area').value,
-      packageId: val('pkg'),
-      frequency: val('freq'),
-      deliveryDay: val('day'),
-      mandateAccepted: document.getElementById('f-mandate').checked,
-      bank: {
-        bankName: document.getElementById('f-bank').value,
-        accountHolder: document.getElementById('f-holder').value,
-        accountNumber: document.getElementById('f-accno').value,
-        branchCode: document.getElementById('f-branch').value,
-      },
-    };
-
+    btn.textContent = 'Creating your account…';
     const res = await fetch('/api/subscriptions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    const data = await res.json();
-    btn.disabled = false;
-    btn.style.opacity = 1;
-
-    if (!res.ok) {
-      errBox.innerHTML = (data.errors || [data.error || 'Something went wrong']).map((x) => '· ' + x).join('<br>');
-      errBox.classList.remove('hidden');
+      body: JSON.stringify({
+        name: $('f-name').value, email: $('f-email').value, phone: $('f-phone').value,
+        street: $('f-street').value, areaId: $('f-area').value,
+        packageId: picked('pkg'), frequency: picked('freq'), deliveryDay: picked('day'),
+        mandateAccepted: $('f-mandate').checked,
+        password: $('f-pass').value,
+        bank: {
+          bankName: $('f-bank').value, accountHolder: $('f-holder').value,
+          accountNumber: $('f-accno').value, branchCode: $('f-branch').value,
+        },
+      }),
+    }).catch(() => null);
+    const data = res ? await res.json() : { errors: ['Could not reach the server — please try again.'] };
+    if (!res || !res.ok) {
+      btn.disabled = false;
+      btn.textContent = 'Create account & finish →';
+      const e = $('e-server');
+      e.innerHTML = (data.errors || [data.error || 'Something went wrong.']).join('<br>');
+      e.classList.add('show');
       return;
     }
-
-    const s = data.subscription;
-    const fmt = (ds) => new Date(ds + 'T12:00:00').toLocaleDateString('en-ZA', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-    document.getElementById('confirmDetails').innerHTML = `
-      <div><span class="text-ink font-600">Reference:</span> ${s.id}</div>
-      <div><span class="text-ink font-600">Package:</span> ${s.packageName} — ${R(s.totalPerDelivery)} per delivery (${R(s.pricePerDelivery)} + ${R(s.deliveryFee)} delivery)</div>
-      <div><span class="text-ink font-600">Schedule:</span> ${s.frequencyName}, ${s.deliveryDayName}s</div>
-      <div><span class="text-ink font-600">Area:</span> ${s.areaName}</div>
-      <div><span class="text-ink font-600">First delivery:</span> ${fmt(data.firstDelivery)}, ${cfg.deliveryWindow}</div>
-      <div><span class="text-ink font-600">First debit order:</span> ${R(data.firstDebit.amount)} on ${fmt(data.firstDebit.dueDate)} (${s.mandate.bankName} ${s.mandate.accountNumberMasked})</div>`;
-    form.classList.add('hidden');
-    document.querySelector('main .border-b.border-line').scrollIntoView();
-    document.getElementById('confirm').classList.remove('hidden');
+    localStorage.setItem('peak-token', data.token);
+    window.location.href = 'portal.html?welcome=1';
   });
+
+  // Enter advances the wizard
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && e.target.tagName !== 'BUTTON') { e.preventDefault(); $('btnNext').click(); }
+  });
+
+  show(1);
 })();
 </script>
 </body>

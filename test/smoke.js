@@ -133,8 +133,30 @@ async function main() {
     expected3.setUTCDate(expected3.getUTCDate() + 7);
     assert(done3.nextDeliveryDate === expected3.toISOString().slice(0, 10), 'weekly next delivery is exactly 7 days later');
 
+    // account + portal flow: signup with password → me → pay now → login
+    const s4 = await post('/api/subscriptions', signup({
+      email: 'naledi@example.com', name: 'Naledi Khumalo', password: 'water123',
+      bank: { accountNumber: '62055512345', bankName: 'FNB', accountHolder: 'N Khumalo', branchCode: '250655' },
+    }));
+    assert(s4.status === 201 && typeof s4.data.token === 'string', 'signup with password returns a session token');
+    assert(!('passwordHash' in s4.data.subscription) && s4.data.subscription.hasAccount === true, 'password hash is never exposed');
+    const authed = (u, opts = {}) => fetch(BASE + u, { ...opts, headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + s4.data.token, ...(opts.headers || {}) } });
+    const me = await (await authed('/api/me')).json();
+    assert(me.subscription.id === s4.data.subscription.id && me.openDebit, '/api/me returns own subscription with open debit');
+    const pay = await authed('/api/me/pay', { method: 'POST' });
+    const payData = await pay.json();
+    assert(pay.status === 200 && payData.paid === 528, 'portal "finish payment" collects the debit immediately');
+    const me2 = await (await authed('/api/me')).json();
+    assert(me2.openDebit === null && me2.upcomingDelivery.status === 'scheduled', 'after paying, delivery is confirmed and nothing is owed');
+    const badLogin = await post('/api/login', { email: 'naledi@example.com', password: 'wrong' });
+    assert(badLogin.status === 401, 'wrong password is rejected');
+    const goodLogin = await post('/api/login', { email: 'naledi@example.com', password: 'water123' });
+    assert(goodLogin.status === 200 && typeof goodLogin.data.token === 'string', 'login with correct password returns a token');
+    const shortPass = await post('/api/subscriptions', signup({ email: 'x@example.com', password: '123', bank: { accountNumber: '111222333', bankName: 'FNB', accountHolder: 'X', branchCode: '250655' } }));
+    assert(shortPass.status === 400, 'short password is rejected');
+
     // static pages + datastore protection
-    for (const p of ['/', '/subscribe.html', '/admin.html']) {
+    for (const p of ['/', '/subscribe.html', '/admin.html', '/portal.html']) {
       const r = await fetch(BASE + p);
       assert(r.status === 200, `${p} serves`);
     }
