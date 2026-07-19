@@ -1489,7 +1489,9 @@ const EMPTY = { seq: 0, subscriptions: [], deliveries: [], debitOrders: [], tran
 let db;
 try { db = { ...JSON.parse(JSON.stringify(EMPTY)), ...JSON.parse(localStorage.getItem(KEY)) }; } catch { db = JSON.parse(JSON.stringify(EMPTY)); }
 if (!db.subscriptions) db = JSON.parse(JSON.stringify(EMPTY));
-const save = () => localStorage.setItem(KEY, JSON.stringify(db));
+// Storage can be unavailable (private browsing, sandboxed preview) — the
+// demo must keep working in-memory rather than dying on the first click.
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(db)); } catch {} };
 const nextId = (p) => `${p}-${String(++db.seq).padStart(5, '0')}`;
 const today = () => document.getElementById('simDate').value || dstr(new Date());
 const $ = (id) => document.getElementById(id);
